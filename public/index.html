@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hail Watch</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<header class="site-header">
+  <h1>🧊 Hail Watch</h1>
+  <p class="tagline">Live NWS severe thunderstorm warnings + SPC hail reports for the places you care about.</p>
+</header>
+
+<main>
+  <section class="add-location card">
+    <h2>Add a location</h2>
+    <div class="add-location-controls">
+      <button id="use-my-location" type="button">📍 Use my location</button>
+      <span class="or">or</span>
+      <form id="zip-form">
+        <input id="zip-input" type="text" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" placeholder="US ZIP code" required />
+        <button type="submit">Add</button>
+      </form>
+    </div>
+    <p id="add-location-error" class="error-text" hidden></p>
+  </section>
+
+  <section id="locations"></section>
+
+  <p id="empty-state" class="empty-state" hidden>
+    No saved locations yet. Add one above to start watching for hail.
+  </p>
+</main>
+
+<footer>
+  <p>
+    Data: <a href="https://www.weather.gov/" target="_blank" rel="noopener">National Weather Service</a> active alerts
+    and <a href="https://www.spc.noaa.gov/climo/reports/" target="_blank" rel="noopener">SPC preliminary storm reports</a>.
+    Storm reports are preliminary and not fully quality-controlled. Locations are stored only in your browser.
+  </p>
+</footer>
+
+<template id="location-card-template">
+  <article class="card location-card">
+    <div class="location-card-header">
+      <div>
+        <h3 class="location-label"></h3>
+        <span class="location-coords"></span>
+      </div>
+      <div class="location-card-actions">
+        <label class="radius-label">
+          Radius
+          <select class="radius-select">
+            <option value="15">15 mi</option>
+            <option value="25">25 mi</option>
+            <option value="50" selected>50 mi</option>
+            <option value="100">100 mi</option>
+          </select>
+        </label>
+        <button class="refresh-btn" type="button" title="Refresh">🔄</button>
+        <button class="remove-btn" type="button" title="Remove">✕</button>
+      </div>
+    </div>
+
+    <div class="status-line"></div>
+
+    <div class="warnings-list"></div>
+
+    <div class="map"></div>
+
+    <div class="reports-section">
+      <h4>Recent hail reports (last 24h)</h4>
+      <ul class="reports-list"></ul>
+      <p class="no-reports" hidden>No hail reports within range in the last 24 hours.</p>
+    </div>
+  </article>
+</template>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
