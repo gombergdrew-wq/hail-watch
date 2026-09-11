@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hail Watch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1520;
+    --surface: #17212e;
+    --surface-raised: #1e2b3b;
+    --border: #2a3b4d;
+    --ice: #e9eff5;
+    --muted: #8fa4b8;
+    --clear: #3fae9a;
+    --watch: #e8a33d;
+    --warning: #e5484d;
+    --state-color: var(--clear);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ice);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    min-height: 100vh;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse 900px 500px at 80% -10%, rgba(63,174,154,0.08), transparent),
+      radial-gradient(ellipse 700px 400px at -10% 110%, rgba(232,163,61,0.06), transparent);
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    gap: 16px;
+  }
+  .title {
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px 0;
+  }
+  .location-line {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+  }
+  .coords {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #5c7186;
+  }
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface-raised);
+    color: var(--ice);
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+  button:hover { border-color: #3d5268; }
+  button:active { transform: scale(0.97); }
+  button:disabled { opacity: 0.5; cursor: default; }
+  button:focus-visible { outline: 2px solid var(--clear); outline-offset: 2px; }
+
+  .status-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.4s ease;
+  }
+  .status-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--state-color) 14%, transparent), transparent 60%);
+    pointer-events: none;
+    transition: background 0.4s ease;
+  }
+  .status-word {
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--state-color);
+    line-height: 1;
+    transition: color 0.4s ease;
+  }
+  .status-sub {
+    color: var(--muted);
+    font-size: 15px;
+    margin: 12px 0 0 0;
+    line-height: 1.5;
+  }
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--state-color);
+    display: inline-block;
+    margin-right: 8px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--state-color) 20%, transparent);
+    transition: background 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .alerts {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .alert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--state-color);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .alert-card.warning { border-left-color: var(--warning); }
+  .alert-card.watch { border-left-color: var(--watch); }
+  .alert-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .alert-event {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .alert-expires {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .alert-detail {
+    color: #b8c6d4;
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+  .hail-size {
+    display: inline-block;
+    background: color-mix(in srgb, var(--state-color) 18%, transparent);
+    color: var(--state-color);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin-top: 10px;
+  }
+
+  .footer-row {
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .refresh-note {
+    color: #5c7186;
+    font-size: 12.5px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .notif-btn.enabled {
+    border-color: var(--clear);
+    color: var(--clear);
+  }
+  .error-banner {
+    background: rgba(229,72,77,0.1);
+    border: 1px solid rgba(229,72,77,0.3);
+    color: #f3a3a5;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    margin-top: 16px;
+    line-height: 1.5;
+  }
+  .empty-state {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    padding: 8px 0 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="title">Hail Watch</p>
+      <p class="location-line" id="locationLine">Finding your location…</p>
+      <p class="coords" id="coordsLine"></p>
+    </div>
+    <button id="refreshBtn" title="Check now">Check now</button>
+  </header>
+
+  <div class="status-card">
+    <p class="status-word"><span class="status-dot" id="statusDot"></span><span id="statusWord">Loading</span></p>
+    <p class="status-sub" id="statusSub">Pulling the latest from the National Weather Service…</p>
+  </div>
+
+  <div class="alerts" id="alertsList"></div>
+
+  <div id="errorBanner"></div>
+
+  <div class="footer-row">
+    <span class="refresh-note" id="refreshNote">—</span>
+    <button id="notifBtn" class="notif-btn">Enable notifications</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const FALLBACK_ZIP = "80906";
+  const REFRESH_MS = 60000;
+
+  const els = {
+    locationLine: document.getElementById('locationLine'),
+    coordsLine: document.getElementById('coordsLine'),
+    statusWord: document.getElementById('statusWord'),
+    statusSub: document.getElementById('statusSub'),
+    statusDot: document.getElementById('statusDot'),
+    alertsList: document.getElementById('alertsList'),
+    errorBanner: document.getElementById('errorBanner'),
+    refreshBtn: document.getElementById('refreshBtn'),
+    refreshNote: document.getElementById('refreshNote'),
+    notifBtn: document.getElementById('notifBtn'),
+    root: document.documentElement,
+  };
+
+  let coords = null;
+  let seenAlertIds = new Set();
+  let countdownTimer = null;
+  let secondsLeft = REFRESH_MS / 1000;
+
+  function setState(state) {
+    // state: 'clear' | 'watch' | 'warning' | 'loading' | 'error'
+    const map = {
+      clear: { color: '--clear', word: 'Clear', sub: 'No hail watches or warnings for your area right now.' },
+      watch: { color: '--watch', word: 'Watch', sub: 'Conditions favor hail. Keep an eye on the sky.' },
+      warning: { color: '--warning', word: 'Warning', sub: 'Hail is likely happening or imminent in your area.' },
+      loading: { color: '--clear', word: 'Loading', sub: 'Pulling the latest from the National Weather Service…' },
+      error: { color: '--muted', word: 'Unknown', sub: 'Could not reach the National Weather Service.' },
+    };
+    const cfg = map[state];
+    els.root.style.setProperty('--state-color', `var(${cfg.color})`);
+    els.statusWord.textContent = cfg.word;
+    if (state !== 'loading') els.statusSub.textContent = cfg.sub;
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+
+  function extractHailSize(text) {
+    if (!text) return null;
+    let m = text.match(/MAX(?:IMUM)? HAIL SIZE\.*\s*([\d.]+)\s*IN/i);
+    if (m) return m[1] + ' in';
+    m = text.match(/([\d.]+)\s*inch(?:es)?\s*(?:diameter\s*)?hail/i);
+    if (m) return m[1] + ' in';
+    if (/quarter size hail/i.test(text)) return '1.00 in (quarter)';
+    if (/ping pong ball size hail/i.test(text)) return '1.50 in (ping pong)';
+    if (/golf ball size hail/i.test(text)) return '1.75 in (golf ball)';
+    if (/tennis ball size hail/i.test(text)) return '2.50 in (tennis ball)';
+    if (/baseball size hail/i.test(text)) return '2.75 in (baseball)';
+    return null;
+  }
+
+  async function geocodeZip(zip) {
+    const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (!res.ok) throw new Error('zip lookup failed');
+    const data = await res.json();
+    const place = data.places[0];
+    return {
+      lat: parseFloat(place.latitude),
+      lon: parseFloat(place.longitude),
+      label: `${place['place name']}, ${place['state abbreviation']}`,
+    };
+  }
+
+  function getDeviceLocation() {
+    return new Promise((resolve, reject) => {
+      if (!('geolocation' in navigator)) return reject(new Error('no geolocation'));
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, label: null }),
+        (err) => reject(err),
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 }
+      );
+    });
+  }
+
+  async function reverseLabel(lat, lon) {
+    try {
+      const res = await fetch(`https://api.weather.gov/points/${lat.toFixed(4)},${lon.toFixed(4)}`, {
+        headers: { Accept: 'application/geo+json' },
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const p = data.properties;
+      if (p && p.relativeLocation && p.relativeLocation.properties) {
+        const rl = p.relativeLocation.properties;
+        return `Near ${rl.city}, ${rl.state}`;
+      }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+
+  async function initLocation() {
+    try {
+      coords = await getDeviceLocation();
+      els.locationLine.textContent = 'Using your device location';
+    } catch (e) {
+      els.locationLine.textContent = `Location unavailable — using zip ${FALLBACK_ZIP}`;
+      coords = await geocodeZip(FALLBACK_ZIP);
+    }
+    els.coordsLine.textContent = `${coords.lat.toFixed(4)}, ${coords.lon.toFixed(4)}`;
+    const label = coords.label || (await reverseLabel(coords.lat, coords.lon));
+    if (label) els.locationLine.textContent = label;
+  }
+
+  function renderAlerts(features) {
+    els.alertsList.innerHTML = '';
+    if (features.length === 0) {
+      els.alertsList.innerHTML = '<p class="empty-state">Nothing active. This page rechecks automatically.</p>';
+      return;
+    }
+    features.forEach((f) => {
+      const p = f.properties;
+      const isWarning = /warning/i.test(p.event);
+      const card = document.createElement('div');
+      card.className = 'alert-card ' + (isWarning ? 'warning' : 'watch');
+      const hailSize = extractHailSize(p.description || p.headline || '');
+      card.innerHTML = `
+        <div class="alert-head">
+          <span class="alert-event">${p.event}</span>
+          <span class="alert-expires">until ${fmtTime(p.expires)}</span>
+        </div>
+        <p class="alert-detail">${(p.headline || '').replace(/\s+/g, ' ').trim()}</p>
+        ${hailSize ? `<span class="hail-size">Hail ${hailSize}</span>` : ''}
+      `;
+      els.alertsList.appendChild(card);
+    });
+  }
+
+  function notifyNewAlerts(features) {
+    if (Notification.permission !== 'granted') return;
+    features.forEach((f) => {
+      const id = f.id || f.properties.id;
+      if (seenAlertIds.has(id)) return;
+      seenAlertIds.add(id);
+      const p = f.properties;
+      new Notification(`Hail ${/warning/i.test(p.event) ? 'Warning' : 'Watch'}`, {
+        body: (p.headline || p.event).replace(/\s+/g, ' ').trim(),
+        tag: id,
+      });
+    });
+  }
+
+  async function checkAlerts() {
+    if (!coords) return;
+    els.errorBanner.innerHTML = '';
+    try {
+      const res = await fetch(
+        `https://api.weather.gov/alerts/active?point=${coords.lat.toFixed(4)},${coords.lon.toFixed(4)}&status=actual&message_type=alert`,
+        { headers: { Accept: 'application/geo+json' } }
+      );
+      if (!res.ok) throw new Error('NWS API error ' + res.status);
+      const data = await res.json();
+      const all = data.features || [];
+
+      const hailRelated = all.filter((f) => {
+        const p = f.properties;
+        const eventMatch = /severe thunderstorm|tornado/i.test(p.event);
+        const hailMentioned = /hail/i.test((p.description || '') + (p.headline || ''));
+        return eventMatch && hailMentioned;
+      });
+
+      const hasWarning = hailRelated.some((f) => /warning/i.test(f.properties.event));
+      const hasWatch = hailRelated.some((f) => /watch/i.test(f.properties.event));
+
+      setState(hasWarning ? 'warning' : hasWatch ? 'watch' : 'clear');
+      renderAlerts(hailRelated.sort((a, b) => (/warning/i.test(a.properties.event) ? -1 : 1)));
+      notifyNewAlerts(hailRelated);
+
+      els.refreshNote.textContent = `Last checked ${new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' })}`;
+    } catch (e) {
+      setState('error');
+      els.errorBanner.innerHTML = `<div class="error-banner">Couldn't reach the National Weather Service (${e.message}). Will retry automatically.</div>`;
+    }
+  }
+
+  function resetCountdown() {
+    secondsLeft = REFRESH_MS / 1000;
+  }
+
+  function tickCountdown() {
+    secondsLeft -= 1;
+    if (secondsLeft <= 0) {
+      resetCountdown();
+      checkAlerts();
+    }
+  }
+
+  els.refreshBtn.addEventListener('click', () => {
+    resetCountdown();
+    checkAlerts();
+  });
+
+  els.notifBtn.addEventListener('click', async () => {
+    if (!('Notification' in window)) {
+      els.notifBtn.textContent = 'Not supported';
+      els.notifBtn.disabled = true;
+      return;
+    }
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      els.notifBtn.textContent = 'Notifications on';
+      els.notifBtn.classList.add('enabled');
+      els.notifBtn.disabled = true;
+    } else {
+      els.notifBtn.textContent = 'Notifications blocked';
+    }
+  });
+
+  (async function start() {
+    setState('loading');
+    try {
+      await initLocation();
+    } catch (e) {
+      els.locationLine.textContent = 'Could not determine location';
+      setState('error');
+      return;
+    }
+    await checkAlerts();
+    countdownTimer = setInterval(tickCountdown, 1000);
+  })();
+})();
+</script>
+</body>
+</html>
