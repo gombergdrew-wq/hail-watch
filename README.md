@@ -15,6 +15,16 @@ code) and see:
 Saved locations live only in your browser (`localStorage`) — there's no
 account system and no server-side database.
 
+## Deploy it (free)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/gombergdrew-wq/hail-watch)
+
+This repo includes a `render.yaml` blueprint, so the button above provisions
+a free Render Web Service with the right build/start commands already set —
+no manual config. Render's free tier needs no credit card; the tradeoff is it
+sleeps after ~15 minutes with no traffic and takes 30-50s to wake back up on
+the next request, which is fine for personal/low-traffic use.
+
 ## Why these data sources
 
 NWS alerts and SPC storm reports are both free, public-domain, and
@@ -52,5 +62,3 @@ Then open <http://localhost:3000>.
       per-browser localStorage, so alerts can be delivered even when the tab
       isn't open.
 - [ ] MRMS MESH radar hail swaths as a map layer.
-- [ ] Deploy (Render/Fly.io/Railway all support long-running Node servers on
-      a free/cheap tier).
