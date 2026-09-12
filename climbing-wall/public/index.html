@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Climbing Wall Projector</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header>
+  <h1>Climbing Wall Projector</h1>
+  <a class="button" href="project.html" target="_blank" rel="noopener">Open projector view</a>
+</header>
+
+<section id="upload-section" class="panel">
+  <h2>1. Wall photo</h2>
+  <p class="hint">Take or upload a straight-on photo of the wall. Uploading a new photo clears any marked holds.</p>
+  <input type="file" id="photoInput" accept="image/*" capture="environment" />
+</section>
+
+<section id="editor-section" class="panel" hidden>
+  <h2>2. Mark holds</h2>
+  <p class="hint">
+    <strong>Sample</strong>: tap a hold to auto-detect every hold of that color.
+    <strong>Add</strong>: tap to manually drop a marker.
+    <strong>Edit</strong>: tap a marker to select it, then drag, resize, or delete.
+    <strong>Route</strong>: tap markers to toggle them into the active route.
+  </p>
+  <div class="mode-bar">
+    <button data-mode="sample" class="mode-btn active">Sample</button>
+    <button data-mode="add" class="mode-btn">Add</button>
+    <button data-mode="edit" class="mode-btn">Edit</button>
+    <button data-mode="route" class="mode-btn">Route</button>
+  </div>
+  <div id="sample-controls" class="sub-controls">
+    <label>Color match sensitivity
+      <input type="range" id="thresholdSlider" min="5" max="60" value="28" />
+    </label>
+  </div>
+  <div id="edit-controls" class="sub-controls" hidden>
+    <label>Radius
+      <input type="range" id="radiusSlider" min="6" max="60" value="18" />
+    </label>
+    <button id="deleteHoldBtn">Delete selected</button>
+  </div>
+
+  <div id="canvas-wrap">
+    <canvas id="photoCanvas"></canvas>
+  </div>
+
+  <p class="hint" id="statusLine"></p>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

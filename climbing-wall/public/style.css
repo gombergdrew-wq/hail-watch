@@ -1,0 +1,86 @@
+:root { color-scheme: light dark; }
+
+[hidden] { display: none !important; }
+
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: 0 16px 32px;
+  background: #111;
+  color: #eee;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+h1 { font-size: 20px; margin: 0; }
+h2 { font-size: 16px; margin: 0 0 8px; }
+
+.button, button {
+  background: #2a6df5;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.panel {
+  background: #1b1b1b;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.hint { color: #aaa; font-size: 13px; line-height: 1.5; }
+
+input[type="file"] { color: #eee; }
+
+.mode-bar {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.mode-btn {
+  background: #2a2a2a;
+  color: #ccc;
+}
+
+.mode-btn.active {
+  background: #2a6df5;
+  color: #fff;
+}
+
+.sub-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+#canvas-wrap {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#photoCanvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  touch-action: none;
+  background: #000;
+}
