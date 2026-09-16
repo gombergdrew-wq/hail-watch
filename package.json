@@ -6,9 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node --watch server/index.js",
-    "climbing": "node climbing-wall/server.js",
-    "climbing:dev": "node --watch climbing-wall/server.js"
+    "dev": "node --watch server/index.js"
   },
   "license": "MIT",
   "dependencies": {
